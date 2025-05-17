@@ -13,6 +13,13 @@ function CoachDashboard() {
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [coachId, setCoachId] = useState(""); // Assuming coach is logged in user
 
+  // states for creating events 
+   const [title, setTitle] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [location, setLocation] = useState("");
+  const [description, setDescription] = useState("");
+
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -125,6 +132,44 @@ const handleCreateTeam = async () => {
       toast.error(error.response?.data?.message || "Failed to create team");
     }
   };
+  const handleCreateEvent = async () => {
+  if (!title || !eventDate || !location || !description) {
+    toast.error("Please fill all event fields");
+    return;
+  }
+
+  try {
+    const { data } = await axios.post(
+       "http://localhost:3000/events/creatEvent",
+      {
+       title,
+        date: eventDate,
+        location,
+        description,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+      }
+    );
+
+    if (data.success || data.message === "Event created successfully") {
+      toast.success(data.message || "Event created successfully");
+      setTitle("");
+      setEventDate("");
+      setLocation("");
+      setDescription("");
+    } else {
+      toast.error(data.message || "Failed to create event");
+    }
+  } catch (error) {
+    console.error("Error creating event:", error);
+    toast.error(error.response?.data?.message || "Failed to create event");
+  }
+};
+
 
   const approvedParticipants = allUsers.filter(user => user.role === "participant" && user.status === "approved");
 
@@ -184,6 +229,65 @@ const handleCreateTeam = async () => {
           Create Team
         </button>
       </div>
+
+
+<div className="max-w-xl mx-auto p-6 bg-base-100 shadow-lg rounded-xl">
+      <h2 className="text-2xl font-bold mb-4">Create Event: </h2>
+      <div className="form-control mb-4">
+        <label className="label">
+          <span className="label-text">Event Name</span>
+        </label>
+        <input
+          type="text"
+          placeholder="Event Title"
+          className="input input-bordered"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+      </div>
+
+      <div className="form-control mb-4">
+        <label className="label">
+          <span className="label-text">Description: </span>
+        </label>
+        <textarea
+          placeholder="Event Description"
+          className="textarea textarea-bordered"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        ></textarea>
+      </div>
+
+      <div className="form-control mb-4">
+        <label className="label">
+          <span className="label-text">Date: </span>
+        </label>
+        <input
+          type="date"
+          className="input input-bordered"
+          value={eventDate}
+          onChange={(e) => setEventDate(e.target.value)}
+        />
+      </div>
+
+      <div className="form-control mb-6">
+        <label className="label">
+          <span className="label-text">Location</span>
+        </label>
+        <input
+          type="text"
+          placeholder="Event Location"
+          className="input input-bordered"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+        />
+      </div>
+
+      <button onClick={handleCreateEvent} className="btn btn-primary w-full">
+        Create Event
+      </button>
+    </div>
+
 
       {/* --- Existing Filters and Table --- */}
       <div className="mb-6 flex space-x-4">
