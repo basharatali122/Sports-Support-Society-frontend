@@ -17,9 +17,11 @@ import NotificationSystem from './Components/NotificationSystem.jsx';
 import SportsPreferencesSelector from './Components/SportsPreferencesSelector.jsx';
 import AuthRedirect from './Components/AuthRedirect'; // Ensure this is the correct import
 import ParticipantDashboard from './Pages/ParticipantDashboard.jsx';
+import appStore from './Utils/appStore.js';
 
 function App() {
   return (
+    <Provider store={appStore}>
     <Router>
       <Navbar />
       <Routes>
@@ -53,6 +55,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
+    </Provider>
   );
 }
 
