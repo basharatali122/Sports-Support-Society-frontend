@@ -1,10 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { removeUser } from "../Utils/userSlice";
 
 function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const user = useSelector((store) => store.user);
 
   const handleProfileClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -20,33 +24,32 @@ function Navbar() {
         navigate("/view-profile");
         break;
       case "logout":
-        console.log("Logging out...");
+        handleLogout();
         break;
       default:
         break;
     }
   };
+
   const handleLogout = async () => {
-  try {
-    const response = await fetch("http://localhost:3000/auth/logout", {
-      method: "GET",
-      credentials: "include", // send cookies if you're using them (JWT/cookies)
-    });
+    try {
+      const response = await fetch("http://localhost:3000/auth/logout", {
+        method: "GET",
+        credentials: "include",
+      });
 
-    if (response.ok) {
-      console.log("Logout successful");
-      // Optional: Clear local storage, auth context, or any tokens
-      // localStorage.removeItem("token");
-      // Redirect to login or homepage
-      navigate("/login");
-    } else {
-      console.error("Logout failed");
+      dispatch(removeUser());
+
+      if (response.ok) {
+        console.log("Logout successful");
+        navigate("/login");
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("An error occurred during logout:", error);
     }
-  } catch (error) {
-    console.error("An error occurred during logout:", error);
-  }
-};
-
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -87,53 +90,55 @@ function Navbar() {
 
           {/* Right side - Auth buttons and Profile */}
           <div className="flex items-center space-x-4">
-            {/* Auth Buttons */}
-            <div className="hidden sm:flex items-center space-x-4 mr-2">
-              <a
-                href="/login"
-                className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200"
-              >
-                Sign in
-              </a>
-              <a
-                href="/register"
-                className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-              >
-                Sign up
-              </a>
-            </div>
-
-            {/* Profile Dropdown */}
-            <div className="relative" ref={dropdownRef}>
-              <img
-                src="/profile.jpg" // Replace with user profile image path
-                alt="Profile"
-                className="h-10 w-10 rounded-full cursor-pointer border border-gray-300"
-                onClick={handleProfileClick}
-              />
-              {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                  <button
-                    onClick={() => handleOptionClick("view")}
-                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                  >
-                    View Profile
-                  </button>
-                  <button
-                    onClick={() => handleOptionClick("edit")}
-                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                  >
-                    Edit Profile
-                  </button>
-                  <button
-                    onClick={() => handleLogout("logout")}
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
+            {user ? (
+              // Profile Dropdown
+              <div className="relative" ref={dropdownRef}>
+                <img
+                  src="/profile.jpg" // Replace with user profile image path
+                  alt={`Profile of ${user?.name || "user"}`}
+                  className="h-10 w-10 rounded-full cursor-pointer border border-gray-300"
+                  onClick={handleProfileClick}
+                />
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                    <button
+                      onClick={() => handleOptionClick("view")}
+                      className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                    >
+                      View Profile
+                    </button>
+                   <Link to="/profile"> <button
+                      onClick={() => handleOptionClick("edit")}
+                      className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                    >
+                      Edit Profile
+                    </button></Link>
+                    <button
+                      onClick={() => handleOptionClick("logout")}
+                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              // Sign in / Sign up buttons
+              <div className="hidden sm:flex items-center space-x-4 mr-2">
+                <a
+                  href="/login"
+                  className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200"
+                >
+                  Sign in
+                </a>
+                <a
+                  href="/register"
+                  className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                >
+                  Sign up
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>

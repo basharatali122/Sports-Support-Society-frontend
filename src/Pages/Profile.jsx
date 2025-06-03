@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function EditProfileForm({ profile, onCancel }) {
+function EditProfileForm({ profile, onCancel, onSave }) {
   const [formData, setFormData] = useState({
     name: profile?.name || '',
     email: profile?.email || '',
@@ -13,11 +13,26 @@ function EditProfileForm({ profile, onCancel }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle profile update logic
-    console.log('Updated Profile:', formData);
-    onCancel();
+
+    const updatedData = {
+      ...formData,
+      sportsPreferences: formData.sportsPreferences.split(',').map(item => item.trim()),
+      achievements: formData.achievements.split(',').map(item => item.trim()),
+    };
+
+    try {
+      const userId = localStorage.getItem('userId'); // Make sure userId is stored in localStorage
+      const token = localStorage.getItem('token');
+      const response = await axios.put(`http://localhost:3000/users/${userId}`, updatedData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      onSave(response.data); // update profile in parent
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('Failed to update profile');
+    }
   };
 
   return (
@@ -47,11 +62,27 @@ function Profile() {
   const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/users/:userId/approve', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    }).then(response => setProfile(response.data))
-      .catch(() => alert('Error fetching profile'));
+    const fetchProfile = async () => {
+      try {
+        const userId = localStorage.getItem('userId'); // Must store userId in localStorage during login
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`http://localhost:3000/users/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setProfile(response.data);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        alert('Error fetching profile');
+      }
+    };
+
+    fetchProfile();
   }, []);
+
+  const handleSave = (updatedProfile) => {
+    setProfile(updatedProfile);
+    setEditMode(false);
+  };
 
   return (
     <div className="p-6 min-h-screen bg-gray-100">
@@ -64,8 +95,9 @@ function Profile() {
           {editMode ? 'Cancel' : 'Edit Profile'}
         </button>
       </div>
+
       {editMode ? (
-        <EditProfileForm profile={profile} onCancel={() => setEditMode(false)} />
+        <EditProfileForm profile={profile} onCancel={() => setEditMode(false)} onSave={handleSave} />
       ) : (
         profile && (
           <div className="card bg-white shadow-lg p-4">
@@ -81,3 +113,67 @@ function Profile() {
 }
 
 export default Profile;
+
+
+// import React, { useEffect, useState } from 'react';
+// import axios from 'axios';
+
+
+// const ViewProfile = () => {
+//   const [user, setUser] = useState(null);
+//   const [error, setError] = useState('');
+
+//   useEffect(() => {
+//     const fetchProfile = async () => {
+//       try {
+//         const res = await axios.get(`http://localhost:3000/profile/getProfile`, { withCredentials: true });
+//         setUser(res?.data?.data);
+//       } catch (err) {
+//         setError(err.response?.data || 'Failed to fetch profile.');
+//       }
+//     };
+
+//     fetchProfile();
+//   }, []);
+
+//   if (error) return <p className="text-red-500 text-center mt-5">{error}</p>;
+//   if (!user) return <p className="text-center mt-5">Loading profile...</p>;
+
+//   return (
+//     <div className="flex justify-center mt-10">
+//       <div className="card bg-base-200 shadow-xl w-96">
+//         <figure>
+//           <img
+//             src={user.photoUrl || "https://via.placeholder.com/150"}
+//             alt="User"
+//             className="w-full h-60 object-cover"
+//           />
+//         </figure>
+//         <div className="card-body">
+//           <h2 className="card-title text-xl justify-center">{user.firstName} {user.lastName}</h2>
+//           <p><strong>Email:</strong> {user.email}</p>
+//           <p><strong>Age:</strong> {user.age || 'N/A'}</p>
+//           <p><strong>Gender:</strong> {user.gender || 'N/A'}</p>
+//           <p><strong>About:</strong> {user.about || 'N/A'}</p>
+//           <p><strong>Role:</strong> {user.role}</p>
+//           <p><strong>Status:</strong> {user.accountStatus}</p>
+//           <p><strong>Approval Status:</strong> {user.approvalStatus}</p>
+
+//           {user.sportsPreferences?.length > 0 && (
+//             <div>
+//               <strong>Sports Preferences:</strong>
+//               <ul className="list-disc ml-5">
+//                 {user.sportsPreferences.map((sport, i) => (
+//                   <li key={i}>{sport}</li>
+//                 ))}
+//               </ul>
+//             </div>
+//           )}
+
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ViewProfile;

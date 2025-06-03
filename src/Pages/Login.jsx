@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import axios from "axios";
+import { addUser } from "../Utils/userSlice";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -20,6 +24,7 @@ function Login() {
         email,
         password,
       });
+      dispatch(addUser(data))
 
       if (data.status === 200 || data.token) {
         const token = data.token || data.data?.token;

@@ -17,7 +17,9 @@ import NotificationSystem from './Components/NotificationSystem.jsx';
 import SportsPreferencesSelector from './Components/SportsPreferencesSelector.jsx';
 import AuthRedirect from './Components/AuthRedirect'; // Ensure this is the correct import
 import ParticipantDashboard from './Pages/ParticipantDashboard.jsx';
+import { Provider } from 'react-redux'
 import appStore from './Utils/appStore.js';
+import ViewProfile from './Pages/Profile.jsx';
 
 function App() {
   return (
@@ -36,7 +38,7 @@ function App() {
         {/* All users (Authenticated) */}
         <Route path='/dashboard' element={<ParticipantDashboard/>}/>
         <Route path="/dashboardsdf" element={<Dashboard />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<ViewProfile />} />
         <Route path="/events" element={<EventPage />} />
         <Route path="/teams" element={<TeamPage />} />
         <Route path="/performance" element={<PerformanceTracker />} />
