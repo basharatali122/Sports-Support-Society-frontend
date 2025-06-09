@@ -5,7 +5,7 @@ const navItems = [
   { label: 'View Users', path: '/coach-dashboard/view-users' },
   { label: 'Create Events', path: '/coach-dashboard/create-events' },
   { label: 'Create Teams', path: '/coach-dashboard/create-teams' },
-  { label: 'Messages', path: '/coach-dashboard/messages' },
+  { label: 'Chats', path: '/feed' },
   { label: 'Reports', path: '/coach-dashboard/reports' }
 ];
 
@@ -23,7 +23,7 @@ export default function Sidebar() {
         transition={{ delay: 0.2 }}
         className="text-2xl font-bold mb-8 text-gray-900"
       >
-        Admin Panel
+        Coach Panel
       </motion.h2>
 
       <nav className="flex-1 space-y-3">
