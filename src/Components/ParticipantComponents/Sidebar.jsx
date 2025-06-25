@@ -8,9 +8,10 @@ export default function Sidebar({ userType }) {
         { label: 'Dashboard', path: '/dashboard' },
         { label: 'My Events', path: '/dashboard/register-event' },
         { label: 'My Teams', path: '/dashboard/join-team' },
-        { label: 'Messages', path: '/dashboard/message' },
+        
+          { label: 'Chats', path: '/feed' },
         { label: 'Performance', path: '/dashboard/stats' },
-        { label: 'Feedback', path: '/dashboard/feedback' },
+        
 
       ]
     : [

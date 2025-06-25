@@ -48,6 +48,8 @@ import appStore from './Utils/appStore.js';
 import Feed from './Components/Feed.jsx';
 
 import Chat from './Components/Chat.jsx';
+import EventRegister from './Components/ParticipantComponents/EventRegister.jsx';
+import CoachRegistrations from './Components/CoachEventRegistrations.jsx';
 
 
 function App() {
@@ -60,6 +62,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          
 
           {/* Authenticated Routes (All Roles) */}
           <Route path="/auth-redirect" element={<AuthRedirect />} />
@@ -70,6 +73,7 @@ function App() {
           {/* All users (Authenticated) */}
           <Route path='/dashboard' element={<ParticipantDashboard />} />
           <Route path='/dashboard/register-event' element={<RegisterForEvent />} />
+          <Route path='/register/:eventId' element={<EventRegister></EventRegister>}></Route>
           <Route path='/dashboard/join-team' element={<JoinTeam />} />
           <Route path="/dashboard/stats" element={<UserStatsDashboard />} />
           <Route path="/dashboard/message" element={<UserMessage />} />
@@ -84,6 +88,7 @@ function App() {
           <Route path="/coach-dashboard/view-users" element={<ViewUsers />} />
           <Route path="/coach-dashboard/messages" element={<CoachMessage />} />
           <Route path="/coach-dashboard/reports" element={<CoachReports />} />
+          <Route path='/coach-dashboard/eventRegister' element={<CoachRegistrations></CoachRegistrations>}></Route>
 
           {/* Admin-specific Routes */}
           <Route path="/admin" element={<AdminPanel />} />

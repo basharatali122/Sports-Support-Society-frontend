@@ -8,7 +8,10 @@ function Navbar() {
   const dropdownRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((store) => store.user);
+  // const user = useSelector((store) => store.user);
+
+  const user = useSelector((store) => store.user?.data?.user);
+
 
   const handleProfileClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -90,6 +93,10 @@ function Navbar() {
 
           {/* Right side - Auth buttons and Profile */}
           <div className="flex items-center space-x-4">
+          <span className="text-gray-700 font-medium text-sm sm:text-base">
+  {user?.name}
+</span>
+
             {user ? (
               // Profile Dropdown
               <div className="relative" ref={dropdownRef}>
@@ -98,16 +105,12 @@ function Navbar() {
                   alt={`Profile of ${user?.name || "user"}`}
                   className="h-10 w-10 rounded-full cursor-pointer border border-gray-300"
                   onClick={handleProfileClick}
+                
                 />
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                    <button
-                      onClick={() => handleOptionClick("view")}
-                      className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                    >
-                      View Profile
-                    </button>
-                   <Link to="/profile"> <button
+                   
+                   <Link to="/dashboard/profile"> <button
                       onClick={() => handleOptionClick("edit")}
                       className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
                     >

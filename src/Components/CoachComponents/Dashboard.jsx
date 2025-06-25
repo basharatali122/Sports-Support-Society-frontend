@@ -4,9 +4,10 @@ import DashboardCard from './DashboardCard';
 const cards = [
   { title: 'Manage Participants', icon: '🧑‍🤝‍🧑', path: '/coach-dashboard/view-users' },
   { title: 'Schedule Events', icon: '🗓️', path: '/coach-dashboard/create-events' },
-  { title: 'Send Notifications', icon: '📨', path: '/coach-dashboard/messages' },
+  { title: 'Manage Chats', icon: '📨',  path: '/feed' },
   { title: 'Schedule Teams', icon: '👥', path: '/coach-dashboard/create-teams' },
   { title: 'Reports', icon: '📊', path: '/coach-dashboard/reports' },
+  { title: 'Event Registrations', icon: '📊', path: '/coach-dashboard/eventRegister' },
 ];
 
 export default function Dashboard() {

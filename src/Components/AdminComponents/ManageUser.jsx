@@ -13,7 +13,7 @@ function ManageUser() {
       try {
         setLoading(true);
         const response = await axios.get(
-          "http://localhost:3000/users/getAllusers"
+          "http://localhost:3000/users/getAllCoaches"
         );
         setAllUsers(response.data);
       } catch (error) {

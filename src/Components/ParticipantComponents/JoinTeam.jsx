@@ -6,18 +6,22 @@ import { useNavigate } from 'react-router-dom';
 export default function JoinTeam() {
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [joining, setJoining] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTeams = async () => {
       try {
         const res = await axios.get("http://localhost:3000/team/approved-teams", {
-          withCredentials: true,
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
         });
         setTeams(Array.isArray(res.data) ? res.data : []);
       } catch (error) {
         console.error("Error fetching teams:", error);
+        alert("Failed to load teams.");
       } finally {
         setLoading(false);
       }
@@ -26,17 +30,34 @@ export default function JoinTeam() {
     fetchTeams();
   }, []);
 
+  const handleJoinTeam = async (teamId) => {
+    setJoining(teamId);
+    try {
+      const res = await axios.post(
+        `http://localhost:3000/team/${teamId}/join`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+
+      alert(res.data.message || "Team joined successfully!");
+    } catch (err) {
+      console.error("Join error:", err);
+      const errMsg = err.response?.data?.message || "Something went wrong.";
+      alert(errMsg);
+    } finally {
+      setJoining(null);
+    }
+  };
+
   return (
     <div className="p-6">
       <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-md p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Join or Create a Team</h2>
-          <button
-            onClick={() => navigate('/participant/create-team')}
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-5 py-2 rounded-xl transition duration-300"
-          >
-            + Create Team
-          </button>
+          <h2 className="text-2xl font-bold text-gray-800">Join a Team</h2>
         </div>
 
         {loading ? (
@@ -55,8 +76,12 @@ export default function JoinTeam() {
               >
                 <h3 className="text-lg font-semibold text-gray-800 mb-1">Team: {team.name}</h3>
                 <p className="text-sm text-gray-500 mb-4">Created by: {team.createdBy?.name || 'N/A'}</p>
-                <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg w-full transition duration-300">
-                  Join Team
+                <button
+                  onClick={() => handleJoinTeam(team._id)}
+                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg w-full transition duration-300"
+                  disabled={joining === team._id}
+                >
+                  {joining === team._id ? 'Joining...' : 'Join Team'}
                 </button>
               </motion.div>
             ))}

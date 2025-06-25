@@ -1,53 +1,48 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { frame, motion } from "framer-motion";
+import { motion } from "framer-motion";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function CreateEvent() {
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
-// states for creating events
+
   const [title, setTitle] = useState("");
-  const [eventDate, setEventDate] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
 
-  // Function
-  const handleEventCreation = async () => {
-    try {
-      const response = await axios.post("http://localhost:3000/events", { ...selectedEvent });
-      setEvents([...events, response.data.event]);
-      toast.success("Event created successfully");
-    } catch (error) {
-      toast.error("Error creating event");
-    }
-  };
   const handleCreateEvent = async () => {
-    if (!title || !eventDate || !location || !description) {
+    if (!title || !startDate || !endDate || !location || !description) {
       toast.error("Please fill all event fields");
       return;
     }
 
     try {
       const { data } = await axios.post(
-       "http://localhost:3000/events/creatEvent",
-      {
-       title,
-        date: eventDate,
-        location,
-        description,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        "http://localhost:3000/events/creatEvent",
+        {
+          title,
+          startDate,
+          endDate,
+          location,
+          description,
         },
-      }
-    );
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
 
       if (data.success || data.message === "Event created successfully") {
         toast.success(data.message || "Event created successfully");
         setTitle("");
-        setEventDate("");
+        setStartDate("");
+        setEndDate("");
         setLocation("");
         setDescription("");
       } else {
@@ -58,33 +53,14 @@ function CreateEvent() {
       toast.error(error.response?.data?.message || "Failed to create event");
     }
   };
-  const approveEvent = async (eventId) => {
-  try {
-    const token = localStorage.getItem("token");
-    await axios.patch(
-      `http://localhost:3000/events/${eventId}/approve`,
-      {},
-      {
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
 
-    // ✅ Remove the approved event from the list
-    setEvents((prev) => prev.filter((event) => event._id !== eventId));
-  } catch (error) {
-    console.error("Error approving event:", error);
-  }
-};
-  return (<div>
-    {/* Create Event Card */}
+  return (
+    <div>
+      <ToastContainer />
       <h1 className="text-4xl text-center text-blue-500 font-bold">
         Create Event
       </h1>
       <div className="flex flex-col md:flex-row items-center justify-center min-h-screen bg-gray-100 px-4 py-10 gap-10">
-        {/* Left: Create Event Form */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -111,12 +87,24 @@ function CreateEvent() {
             rows={4}
           />
 
-          <input
-            type="date"
-            value={eventDate}
-            onChange={(e) => setEventDate(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition text-gray-600"
-          />
+          <div className="flex flex-col gap-4">
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition text-gray-600"
+              placeholder="Start Date"
+            />
+
+<p>to</p>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition text-gray-600"
+              placeholder="End Date"
+            />
+          </div>
 
           <input
             type="text"
@@ -134,7 +122,6 @@ function CreateEvent() {
           </button>
         </motion.div>
 
-        {/* Right: Illustration */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -150,49 +137,21 @@ function CreateEvent() {
               xmlns="http://www.w3.org/2000/svg"
               className="mx-auto"
             >
-              {/* Calendar body */}
               <rect x="6" y="12" width="52" height="40" rx="6" fill="#2563EB" />
-              {/* Calendar header */}
               <rect x="6" y="12" width="52" height="12" rx="3" fill="#1E40AF" />
-              {/* Date tabs */}
               <rect x="14" y="6" width="8" height="14" rx="3" fill="#1E40AF" />
               <rect x="42" y="6" width="8" height="14" rx="3" fill="#1E40AF" />
-
-              {/* Date grid squares */}
               <g fill="#3B82F6">
                 {[14, 24, 34, 44].map((x) => (
-                  <rect
-                    key={"r1-" + x}
-                    x={x}
-                    y="28"
-                    width="6"
-                    height="6"
-                    rx="1"
-                  />
+                  <rect key={"r1-" + x} x={x} y="28" width="6" height="6" rx="1" />
                 ))}
                 {[14, 24, 34, 44].map((x) => (
-                  <rect
-                    key={"r2-" + x}
-                    x={x}
-                    y="38"
-                    width="6"
-                    height="6"
-                    rx="1"
-                  />
+                  <rect key={"r2-" + x} x={x} y="38" width="6" height="6" rx="1" />
                 ))}
                 {[14, 24, 34, 44].map((x) => (
-                  <rect
-                    key={"r3-" + x}
-                    x={x}
-                    y="48"
-                    width="6"
-                    height="6"
-                    rx="1"
-                  />
+                  <rect key={"r3-" + x} x={x} y="48" width="6" height="6" rx="1" />
                 ))}
               </g>
-
-              {/* Pencil icon for edit (event creation) */}
               <path
                 d="M44 36l8-8m-2-2l-8 8-5 5-3 1 1-3 5-5 8-8z"
                 stroke="#fff"
@@ -200,7 +159,6 @@ function CreateEvent() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
-              {/* Pencil tip detail */}
               <path
                 d="M46 28l4 4"
                 stroke="#fff"
@@ -212,7 +170,8 @@ function CreateEvent() {
           </div>
         </motion.div>
       </div>
-  </div>);
+    </div>
+  );
 }
 
 export default CreateEvent;

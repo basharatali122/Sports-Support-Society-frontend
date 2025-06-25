@@ -1,12 +1,15 @@
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
+  
+
+ 
 const navItems = [
   { label: 'User Management', path: '/admin/user-management' },
   { label: 'Create Event', path: '/admin/events' },
   { label: 'Pending Event', path: '/admin/pending-event' },
   { label: 'Pending Teams', path: '/admin/pending-teams' },
-  { label: 'Messages', path: '/admin/messages' },
+ 
   { label: 'Sports Categories', path: '/admin/sports-categories' },
   { label: 'Reports', path: '/admin/reports' }
 ];

@@ -72,36 +72,50 @@ function CreateTeams() {
     }
   };
 
-  const handleCreateTeam = async () => {
-    if (!teamName || !sport || selectedMembers.length === 0) {
-      toast.error("Please fill all fields and select members");
-      return;
-    }
 
-    try {
-      const { data } = await axios.post(
-        "http://localhost:3000/team/teams",
-        { name: teamName, sport, members: selectedMembers },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-        }
-      );
 
-      if (data.success) {
-        toast.success(data.message || "Team created successfully");
-        setTeamName("");
-        setSport("");
-        setSelectedMembers([]);
-      } else {
-        toast.error(data.message || "Failed to create team");
+
+  
+
+const handleCreateTeam = async () => {
+  if (!teamName || !sport || selectedMembers.length === 0) {
+    toast.error("Please fill all fields and select members");
+    return;
+  }
+
+  try {
+    const { data } = await axios.post(
+      "http://localhost:3000/team/teams",
+      {
+        name: teamName,
+        sport,
+        members: selectedMembers,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
       }
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create team");
+    );
+
+    if (data.success) {
+      toast.success(data.message || "Team created successfully");
+      setTeamName("");
+      setSport("");
+      setSelectedMembers([]);
+    } else {
+      toast.error(data.message || "Failed to create team");
     }
-  };
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Failed to create team");
+  }
+};
+
+
+
+
+
 
   const approvedParticipants = allUsers.filter(
     (user) => user.role === "participant" && user.status === "approved"

@@ -8,14 +8,14 @@ function Register() {
     name: '',
     email: '',
     password: '',
-    role: 'participant'
+    role: 'participant',
+    sport: '' // ✅ Added sport field
   });
   const [message, setMessage] = useState({ text: '', type: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [adminExists, setAdminExists] = useState(false); // ✅ NEW STATE
+  const [adminExists, setAdminExists] = useState(false);
 
-  // ✅ FETCH admin existence
   useEffect(() => {
     axios.get('http://localhost:3000/users/admin-check')
       .then(res => setAdminExists(res.data.adminExists))
@@ -30,13 +30,22 @@ function Register() {
     }));
   };
 
+  const handleSportChange = (e) => {
+    const { value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      sport: value
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setMessage({ text: '', type: '' });
 
-    if (!formData.name || !formData.email || !formData.password) {
-      setMessage({ text: 'Please fill in all fields', type: 'error' });
+    if (!formData.name || !formData.email || !formData.password ||
+      (formData.role === 'coach' && !formData.sport)) {
+      setMessage({ text: 'Please fill in all required fields', type: 'error' });
       setIsLoading(false);
       return;
     }
@@ -155,6 +164,26 @@ function Register() {
                   ))}
               </div>
             </div>
+
+            {/* Coach Sport Dropdown */}
+            {formData.role === 'coach' && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700">Select Your Sport</label>
+                <select
+                  name="sport"
+                  value={formData.sport}
+                  onChange={handleSportChange}
+                  required
+                  className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">-- Select Sport --</option>
+                  <option value="Cricket">Cricket</option>
+                  <option value="Football">Football</option>
+                  <option value="Tennis">Tennis</option>
+                  <option value="Hockey">Hockey</option>
+                </select>
+              </div>
+            )}
 
             {/* Submit */}
             <div>

@@ -23,7 +23,8 @@ function Login() {
       const { data } = await axios.post("http://localhost:3000/auth/login", {
         email,
         password,
-      });
+      },
+      { withCredentials: true });
       dispatch(addUser(data))
 
       if (data.status === 200 || data.token) {

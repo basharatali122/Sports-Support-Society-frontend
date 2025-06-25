@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 const navItems = [
@@ -10,6 +11,8 @@ const navItems = [
 ];
 
 export default function Sidebar() {
+  const user = useSelector((store) => store.user?.data?.user);
+ 
   return (
     <motion.aside
       initial={{ x: -80, opacity: 0 }}
@@ -23,7 +26,7 @@ export default function Sidebar() {
         transition={{ delay: 0.2 }}
         className="text-2xl font-bold mb-8 text-gray-900"
       >
-        Coach Panel
+        {user.sport} Coach
       </motion.h2>
 
       <nav className="flex-1 space-y-3">
